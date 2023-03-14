@@ -7,7 +7,7 @@
 clear all, close all; clc
 
 %leitura do arquivo para elabora a transformada
-[x, fs] = audioread('384271.wav');
+[x, fs] = audioread('384571.wav');
 L = length(x);
 realTime = L/fs;
 tempo = linspace(0,realTime, L);
@@ -59,7 +59,7 @@ freqDisc = 1/N; %Frequência+ discreta
 freqReal= freqDisc * fs * (0:1:N-1); %Em kHz
 
 %plotando um gráfico específico
-S =271; %Número da janela
+S =1304; %Número da janela
 figure(1);
 subplot(3,1,1), plot(tempo, x), title('sinal sonoro'),xlabel('tempo em segundos')
 subplot(3,1,2), stem(freqReal,abs(Y(:,S))), title('módulo da janela +S utilizando matrizes'),xlabel('frequência em Hz')
@@ -98,20 +98,31 @@ for m=0:1:M
     if (pot(1,m+1) >= potMax*0.25)%se a potência é grande
         %dividindo as frequências
         %frequências de 600 a 1000hz
-        Ymin = abs(Y(intervalo1,m+1));
-        [a, f1Max] = max(Ymin);
-        f1Max = (intervalo1(f1Max)-1)*fs/N;
-
-        %frequências de 1100 a 1500 hz
-        Ymax = abs(Y(intervalo2,m+1));
-        [a, f2Max] = max(Ymax);
-        f2Max =(intervalo2(f2Max)-1)*fs/N;
-
-
-        %Tomando a média do maior e do menor valor de frequência em cada
-        %intervalo
+        if m+25 < M-1 %Pegar um valor mais central do pulso
+            Ymin = abs(Y(intervalo1,m+25));
+            [a, f1Max] = max(Ymin);
+            f1Max = (intervalo1(f1Max)-1)*fs/N;
         
+            %frequências de 1100 a 1500 hz
+        
+            Ymax = abs(Y(intervalo2,m+25));
+            [a, f2Max] = max(Ymax);
+            f2Max =(intervalo2(f2Max)-1)*fs/N;
+        else
+            Ymin = abs(Y(intervalo1,m+1));
+            [a, f1Max] = max(Ymin);
+            f1Max = (intervalo1(f1Max)-1)*fs/N;
+        
+            %frequências de 1100 a 1500 hz
+        
+            Ymax = abs(Y(intervalo2,m+1));
+            [a, f2Max] = max(Ymax);
+            f2Max =(intervalo2(f2Max)-1)*fs/N;            
+        end
 
+
+
+        
         %analisando se esse valor deve ou não ser guardado
         if (m > 20 && pot(1,m) < potMax*0.3) %antes de um pulso
             num(:,cont) = [f1Max; f2Max];
@@ -120,11 +131,8 @@ for m=0:1:M
     end
 end
 
-int=0:M;
-
 figure(2)
-
-plot(int,pot,int,potAux), title('Potencia do sinal em cada janela'),xlabel('indice da janela')
+plot(0:M,pot,0:M,potAux), title('Potencia do sinal em cada janela'),xlabel('indice da janela')
 
 
 % ==========================|| Função para identificar digitos ||================================
