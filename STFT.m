@@ -7,12 +7,12 @@
 clear all, close all; clc
 
 %leitura do arquivo para elabora a transformada
-[x, fs] = audioread('245897.wav');
+[x, fs] = audioread('384271.wav');
 L = length(x);
 realTime = L/fs;
 tempo = linspace(0,realTime, L);
 
-%sound(x,fs);%Exibir o som
+sound(x,fs);%Exibir o som
 % =====================|| Aplicar transformada no sinal ||============================
 %Variáveis necessárias
 %quantidade de amostras de uma janela
@@ -126,9 +126,13 @@ figure(2)
 
 plot(int,pot,int,potAux), title('Potencia do sinal em cada janela'),xlabel('indice da janela')
 
-%PLOTANDO OS NUMEROS
-num
 
+% ==========================|| Função para identificar digitos ||================================
+digitos=zeros(1,length(num));
 
+for m=1:1:length(num)
+    digitos(m) = showDigit(num(1,m),num(2,m));
+end
 
-%Identificando os digitos
+%Exibindo digitos
+digitos
