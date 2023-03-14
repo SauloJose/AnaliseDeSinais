@@ -90,7 +90,7 @@ potAux=pot;
 potMax =max(max(pot));
 
 %Transformar em pulsos retangulares.
-pulso = find(pot > 0.45*potMax);
+pulso = find(pot > 0.1*potMax);
 pot(pulso)=potMax;
 
 for m=0:1:M
