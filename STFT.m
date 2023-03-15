@@ -7,12 +7,12 @@
 clear all, close all; clc
 
 %leitura do arquivo para elabora a transformada
-[x, fs] = audioread('384571.wav');
+[x, fs] = audioread('123456789.wav');
 L = length(x);
 realTime = L/fs;
 tempo = linspace(0,realTime, L);
 
-sound(x,fs);%Exibir o som
+%sound(x,fs);%Exibir o som
 % =====================|| Aplicar transformada no sinal ||============================
 %Variáveis necessárias
 %quantidade de amostras de uma janela
@@ -90,7 +90,7 @@ potAux=pot;
 potMax =max(max(pot));
 
 %Transformar em pulsos retangulares.
-pulso = find(pot > 0.1*potMax);
+pulso = find(pot > 0.15*potMax);
 pot(pulso)=potMax;
 
 for m=0:1:M
@@ -114,14 +114,10 @@ for m=0:1:M
             f1Max = (intervalo1(f1Max)-1)*fs/N;
         
             %frequências de 1100 a 1500 hz
-        
             Ymax = abs(Y(intervalo2,m+1));
             [a, f2Max] = max(Ymax);
             f2Max =(intervalo2(f2Max)-1)*fs/N;            
         end
-
-
-
         
         %analisando se esse valor deve ou não ser guardado
         if (m > 20 && pot(1,m) < potMax*0.3) %antes de um pulso
