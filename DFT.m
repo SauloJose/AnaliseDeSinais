@@ -18,22 +18,65 @@ matrizBase=((0:1:N-1)'*(0:1:N-1));
 nucleo = exp(-(2*pi*1i)/N);
 BaseFT = nucleo.^matrizBase;
 
-% ===============================|PLOTANDO DADOS|===================================
-
-%Transformada de FOURIER de tempo Curto
+%Transformada discreta de fourier.
 Y = BaseFT*x;
-Y2 = fft(x);
 
-%abela de frequências
+%Normalizando valores, para que a amplitude seja a compatível do sinal original
+Y = Y/N;
+
+% ===============================|PLOTANDO DADOS|===================================
+%tabela de frequências
 fs = 1; %1 amostra por hora
 freal = (0:N-1)*fs/N;
 
-figure(1);
-subplot(3,1,1), plot((0:1:N-1), x), title('Sinal original'),xlabel('Horas a partir de 15 de junho às 0:00 h'),ylabel(' (MWh/h)');
-subplot(3,1,2), stem(freal,abs(Y)),title('Modulo'),xlabel('Frequência em amostras/Hora')
-subplot(3,1,3), stem(freal,angle(Y)),title('Fase'),xlabel('Frequência em amostras/Hora')
+%Calculando valor médio do sinal
+Vmed = Y(1) %Os dados já estão normalizados
 
-figure(2);
-subplot(3,1,1), plot((0:1:N-1), x), title('Sinal original'),xlabel('Horas a partir de 15 de junho às 0:00 h'),ylabel(' (MWh/h)');
-subplot(3,1,2), stem(freal,abs(Y2)),title('Modulo'),xlabel('Frequência em amostras/Hora')
-subplot(3,1,3), stem(freal,angle(Y2)),title('Fase'),xlabel('Frequência em amostras/Hora')
+% Analisando a DFT do sinal, observa-se que existe duas frequências que se
+% sobresaem, portanto, o pode ser aproximado com uma função dessas duas
+% frequências, da forma Xm(t)=Vmed + 2A1*cos(w1t+o1)+2A2*cos(w2t+o2);
+% Buscarei o valores dessas frequências, e tomarei como o período o maior
+% entre eles...
+
+
+%Procurando frequência máxima 1
+[Amp1, k1] = max(abs(Y(2:floor(N/2)+1,1)));
+freqMax1 = freal(k1+1);
+
+%Procurando frequência máxima 2
+[Amp2, k2] = max(abs(Y(k1+25:floor(N/2)+1,1)));
+freqMax2 = freal(k2+1);
+
+%Período real
+T1=1/freqMax1
+T2 =1/freqMax2
+
+%O T da função aproximada será o MMC das frequências,
+T = lcm(floor(T1),ceil(T2))
+
+%Sinal que tenha essa frequência 
+%Será da forma cos
+fase1 = angle(Y(k1+1));
+fase2 = angle(Y(k2+1));
+
+intervaloApoio = (0:N-1);
+
+%Função aproximada para o sinal com as duas maiores frequências
+X2 = Vmed+2*(Amp1*cos(intervaloApoio*2*pi*freqMax1+fase1)+Amp2*cos(intervaloApoio*2*pi*freqMax2+fase2));
+
+%Portanto a cada T horas, a função aproximada X2 se repete, porém, a cada T1
+%horas, a maior frequência se repete.
+% ===============================|PLOTANDO DADOS|===================================
+
+figure(1);
+subplot(2,1,1), stem(freal,abs(Y)),title('Modulo da DFT'),xlabel('Frequência em amostras/Hora')
+subplot(2,1,2), stem(freal,angle(Y)),title('Fase'),xlabel('Frequência em amostras/Hora')
+
+figure(2)
+subplot(2,1,1),
+plot(intervaloApoio,x), title('Sinal original'),xlabel('Horas a partir de 15 de junho às 0:00 h'),ylabel(' (MWh/h)');
+subplot(2,1,2)
+plot(intervaloApoio,X2), title('Sinal aproximado'),xlabel('Horas a partir de 15 de junho às 0:00 h'),ylabel(' (MWh/h)');
+
+figure(3)
+plot(intervaloApoio,x,intervaloApoio,X2),title('Comparando os Sinais'),xlabel('Horas a partir de 15 de junho às 0:00 h'),ylabel(' (MWh/h)');
