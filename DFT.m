@@ -34,7 +34,7 @@ Vmed = Y(1) %Os dados já estão normalizados
 
 % Analisando a DFT do sinal, observa-se que existe duas frequências que se
 % sobresaem, portanto, o pode ser aproximado com uma função dessas duas
-% frequências, da forma Xm(t)=Vmed + 2A1*cos(w1t+o1)+2A2*cos(w2t+o2);
+% frequências, da forma Xm(t)=Vmed + 2*A1*cos(w1*t+o1)+2*A2*cos(w2*t+o2);
 % Buscarei o valores dessas frequências, e tomarei como o período o maior
 % entre eles...
 
@@ -48,8 +48,8 @@ freqMax1 = freal(k1+1);
 freqMax2 = freal(k2+1);
 
 %Período real
-T1=1/freqMax1
-T2 =1/freqMax2
+T1=1/freqMax1 %Período da primeira frequência (maior magnitude)
+T2 =1/freqMax2 %Período da segunda frequências (menor magnitude)
 
 %O T da função aproximada será o MMC das frequências,
 T = lcm(floor(T1),ceil(T2))
